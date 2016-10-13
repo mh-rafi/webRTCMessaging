@@ -25,8 +25,27 @@
 				<form name="message-form" novalidate>
 					<textarea class="form-control message_input" required id="" cols="30" rows="3" ng-model="message.text" ng-focus="clrNotification()"></textarea>
 					<button class="btn btn-primary pull-right" ng-click="sendMessage()">Send message</button>
+					<button class="btn btn-primary pull-right" ng-click="makeCall()">Video call</button>
 				</form>
 			</div>
 		</div>
 	</div>
 </section>
+
+<div ng-show="showVideoContainer" class="video_container box">
+	{{callStatus}}
+	<div class="selfVideoBox">
+		<video autoplay="autoplay" class="easyrtcMirror" id="selfVideo" muted="muted" volume="0" ></video>
+	</div>
+    <div class="callerVideoBox">
+    	<video autoplay="autoplay" id="callerVideo"></video>
+    </div>
+	<a class="btn btn-primary" ng-click="endCall()">End call</a>
+</div>
+
+<div ng-show="showIncommingCallDialogue" class="icommingCallDialogue box">
+	<h3>{{callerPeer.caller_username}} calling...</h3>
+
+	<a class="btn btn-success" ng-click="receiveCall()">Receive call</a>
+	<a class="btn btn-danger" ng-click="">Cancel</a>
+</div>
