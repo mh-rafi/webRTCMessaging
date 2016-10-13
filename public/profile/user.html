@@ -34,8 +34,8 @@
 				<h3 class="user_name">{{user.first_name}} {{user.last_name}}</h3>
 				<div class="user_title">{{user.title}}</div>
 
-				<a ng-if="!isMine" href="#/messages/{{user.username}}" class="btn btn-primary">Send message</a>
-				<a ng-if="isMine" href="#/user/{{current_user.username}}/edit" class="btn btn-primary">Edit profile</a>
+				<a ng-if="!isMine" href="/messages/{{user.username}}" class="btn btn-primary">Send message</a>
+				<a ng-if="isMine" href="/user/{{current_user.username}}/edit" class="btn btn-primary">Edit profile</a>
 				<div class="user_bio">{{user.bio}}</div>
 			</div>
 

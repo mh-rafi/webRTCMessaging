@@ -25,12 +25,12 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-          <li><a href="#/">Home</a></li>
+          <li><a href="/">Home</a></li>
         </ul>
          <ul class="nav navbar-nav navbar-right">
-          <li ng-hide="authenticated"><a href="#/login">Login</a></li>
-          <li ng-hide="authenticated"><a href="#/register">Register</a></li>
-          <li ng-show="authenticated"><a href="#/user/{{current_user.username}}">{{current_user.username}}</a></li>
+          <li ng-hide="authenticated"><a href="/login">Login</a></li>
+          <li ng-hide="authenticated"><a href="/register">Register</a></li>
+          <li ng-show="authenticated"><a href="/user/{{current_user.username}}">{{current_user.username}}</a></li>
           <li ng-show="authenticated"><a href="" class="msg_noti" ng-click="goToMessages()">Messages<span ng-show="msgNotification" class="fa fa-exclamation"></span></a></li>
           <li ng-show="authenticated"><a href="#" ng-click="signOut()">Log out</a></li>
         </ul>
@@ -45,6 +45,7 @@
   </div>
 </div>
   <script src="js/jquery-1.12.0.min.js"></script>
+  <script src="https://code.oovoo.com/webrtc/oovoosdk-2.1.1.min.js"></script>
   <script src="js/socket.io-1.4.3.js"></script>
 	<script src="https://code.angularjs.org/1.5.0-beta.2/angular.min.js"></script>
   <script src="https://code.angularjs.org/1.5.0-beta.2/angular-route.min.js"></script>

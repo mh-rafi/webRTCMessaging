@@ -4,7 +4,7 @@
 			<div class="connected_users" ng-show="connUsers">
 				<h4>Connected Users</h4>
 				<ul class="connected_users">
-					<li ng-repeat="connUser in connUsers"><a href="#/messages/{{connUser.name}}">{{connUser.name}} <span ng-show="connUser.has_msg" class="fa fa-comment"></span></a></li>
+					<li ng-repeat="connUser in connUsers"><a href="/messages/{{connUser.name}}">{{connUser.name}} <span ng-show="connUser.has_msg" class="fa fa-comment"></span></a></li>
 				</ul>
 			</div>
 		</div>
