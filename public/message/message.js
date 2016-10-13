@@ -144,8 +144,8 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
                 //register to conference events
                 avchatObj.onParticipantJoined = onParticipantJoined;
                 avchatObj.onParticipantLeft = onParticipantLeft;
-                avchatObj.onConferenceStateChanged = onConferenceStateChanged;
-                avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged
+                // avchatObj.onConferenceStateChanged = onConferenceStateChanged;
+                avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
                 avchatObj.join(conferenceId, participantId, "participant name", function (result) { });
             }
         }
