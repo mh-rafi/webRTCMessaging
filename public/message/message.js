@@ -113,14 +113,12 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
             redirectUrl = location.href + "?pid=" + participantId;
 
             console.log(redirectUrl);
-            setTimeout(function() {
                 ooVooClient.authorization({
                     token: appToken,
                     isSandbox: true,
                     userId: participantId,
                     callbackUrl: redirectUrl
                 });
-            }, 3000)
         } else {
             console.log(sessionToken);
             ooVooClient.connect({
@@ -158,7 +156,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
         function onParticipantJoined(evt) {
             if (evt.stream && evt.uid != null) {
                 if (evt.uid == participantId) { //me
-                    document.getElementById("selfVideo").src = URL.createObjectURL(evt.stream);
+                    document.getElementById("localVideo").src = URL.createObjectURL(evt.stream);
                 }
                 else { //participants
                     var videoElement = document.createElement("video");
