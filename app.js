@@ -27,7 +27,7 @@ var routes = require('./routes/index');
 var api = require('./routes/api');
 
 var app = express();
-
+var router = express.Router();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -48,6 +48,29 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// app.use(function(req, res, next) {
+//   var url = req.url;
+//   console.log(req.url);
+//   console.log('-------------LOG-----------------');
+//   if(url == '/auth/login' || url == '/auth/signup' || url == '/api/user') {
+//     return next();
+//   }
+//   console.log('------------ Redirected ---------------')
+//   res.redirect('/')
+// });
+
+app.get(/^((?!\/(socket\.io)|(api)|(auth)).)*$/, function(req, res) {
+  console.log(req.url);
+  console.log('-----------/NOT api-------------')
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+
+// app.get(/^((?!\/(auth)).)*$/, function(req, res) {
+//   console.log(req.url);
+//   console.log('-----------/NOT auth-------------')
+//   res.redirect('/')
+// });
 
 app.use('/', authenticate);
 app.use('/auth', authenticate);

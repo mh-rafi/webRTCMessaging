@@ -108,7 +108,7 @@ angular.module('newJobs', [
 		$rootScope.loading = false;
 		$rootScope.loadText = '';
 	})
-	.config(['$routeProvider', function($routeProvider) {
+	.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 		$routeProvider
 			.when('/', {
 				templateUrl: 'main.html',
@@ -116,7 +116,8 @@ angular.module('newJobs', [
 			})
 			.otherwise({
 				redirectTo: '/'
-			})
+			});
+			$locationProvider.html5Mode(true);
 	}])
 	.factory('jobService', function($resource) {
 		return $resource('/api/jobs/:id');
