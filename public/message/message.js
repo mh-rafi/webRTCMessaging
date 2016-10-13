@@ -158,7 +158,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
         function onParticipantJoined(evt) {
             if (evt.stream && evt.uid != null) {
                 if (evt.uid == participantId) { //me
-                    document.getElementById("localVideo").src = URL.createObjectURL(evt.stream);
+                    document.getElementById("selfVideo").src = URL.createObjectURL(evt.stream);
                 }
                 else { //participants
                     var videoElement = document.createElement("video");
