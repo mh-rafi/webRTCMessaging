@@ -138,7 +138,19 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 		socket.on('private_call', function(peerData) {
 			console.log('user called---------');
-			avchatObj.join(conferenceId, participantId, "participant name", function(result) {})
+			avchatObj = ooVooClient.AVChat.init({
+				video: true,
+				audio: true,
+				videoResolution: ooVooClient.VideoResolution["HIGH"],
+				videoFrameRate: new Array(5, 15)
+			}, function(res) {
+				if (!res.error) {
+					console.log('receive call---------');
+					// socket.emit('private_call', peerData);
+					onAVChatInit()
+				}
+			});
+			
 		});
 
 
@@ -165,7 +177,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			avchatObj.onParticipantLeft = onParticipantLeft;
 			avchatObj.onConferenceStateChanged = onConferenceStateChanged;
 			avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
-			// avchatObj.join(conferenceId, participantId, "participant name", function(result) {});
+			avchatObj.join(conferenceId, participantId, "participant name", function(result) {});
 		}
 
 		function onParticipantLeft(evt) {
