@@ -172,6 +172,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 		function onAVChatInit() {
 			console.log('Binding events----------');
+			console.log(avchatObj);
 			//register to conference events
 			avchatObj.onParticipantJoined = onParticipantJoined;
 			avchatObj.onParticipantLeft = onParticipantLeft;
