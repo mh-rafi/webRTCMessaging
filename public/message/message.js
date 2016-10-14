@@ -99,32 +99,68 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		};
 
 
+
 		// var avchatObj = null;
 		var conferenceId = "mtconfid3";
 		var appToken = "MDAxMDAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYRzQeJwJ9kIT1W0phkyxfph65BBwLjVSKIQ0dFZTpODdrTSBwB97bp8GCTZyPmRD6CbT64Dh5R2kwRKM8DySov0OvOwMPtqOLD%2B7eobHmqsh3%2BPtpwU%2FDGlGAJOwpOYk%3D";
 		var sessionToken = getQSParam("t");
 		var participantId = getQSParam("pid");
 
+		if (!sessionToken) {
+				//login to get session token
+				//for example (get random id)
+				console.log('Not session');
+				participantId = Math.floor(Math.random() * 9999999999) + 1000000000;
 
-		function onClientConnected(res) {
+				var redirectUrl = "url to send response with the session token"
+				redirectUrl = location.href + "?pid=" + participantId;
+
+				console.log(redirectUrl);
+				ooVooClient.authorization({
+					token: appToken,
+					isSandbox: true,
+					userId: participantId,
+					callbackUrl: redirectUrl
+				});
+			} else {
+				console.log(sessionToken);
+				ooVooClient.connect({
+					userId: participantId,
+					userToken: sessionToken
+				}, function(res) {});
+			}
+		$scope.makeCall = function() {
+			onClientConnected();
+			
+		};
+		
+		socket.on('private_call', function(peerData) {
+			avchatObj.join(conferenceId, participantId, "participant name", function(result) {})
+		});
+
+
+		function onClientConnected() {
 			//init conference
 			avchatObj = ooVooClient.AVChat.init({
 				video: true,
 				audio: true,
 				videoResolution: ooVooClient.VideoResolution["HIGH"],
 				videoFrameRate: new Array(5, 15)
-			}, onAVChatInit);
+			}, function(res) {
+				if (!res.error) {
+					socket.emit('private_call', peerData);
+					onAVChatInit()
+				}
+			});
 		}
 
-		function onAVChatInit(res) {
-			if (!res.error) {
-				//register to conference events
-				avchatObj.onParticipantJoined = onParticipantJoined;
-				avchatObj.onParticipantLeft = onParticipantLeft;
-				avchatObj.onConferenceStateChanged = onConferenceStateChanged;
-				avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
-				avchatObj.join(conferenceId, participantId, "participant name", function(result) {});
-			}
+		function onAVChatInit() {
+			//register to conference events
+			avchatObj.onParticipantJoined = onParticipantJoined;
+			avchatObj.onParticipantLeft = onParticipantLeft;
+			avchatObj.onConferenceStateChanged = onConferenceStateChanged;
+			avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
+			// avchatObj.join(conferenceId, participantId, "participant name", function(result) {});
 		}
 
 		function onParticipantLeft(evt) {
@@ -159,31 +195,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		}
 
 
-		$scope.makeCall = function() {
-			if (!sessionToken) {
-				//login to get session token
-				//for example (get random id)
-				console.log('Not session');
-				participantId = Math.floor(Math.random() * 9999999999) + 1000000000;
-
-				var redirectUrl = "url to send response with the session token"
-				redirectUrl = location.href + "?pid=" + participantId;
-
-				console.log(redirectUrl);
-				ooVooClient.authorization({
-					token: appToken,
-					isSandbox: true,
-					userId: participantId,
-					callbackUrl: redirectUrl
-				});
-			} else {
-				console.log(sessionToken);
-				ooVooClient.connect({
-					userId: participantId,
-					userToken: sessionToken
-				}, onClientConnected);
-			}
-		};
+		
 
 
 

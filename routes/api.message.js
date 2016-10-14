@@ -155,6 +155,21 @@ module.exports = function(io) {
 			})
 		});
 
+		socket.on('private_call', function(peerData) {
+			if(users[peerData._receiver]) {
+				users[peerData._receiver].emit('private_call', peerData)
+			} else {
+
+			}
+		});
+
+		socket.on('call_received', function(peerData) {
+			if(users[peerData.caller_username]) {
+				users[peerData.caller_username].emit('call_received', {})
+			}
+		});
+
+		
 		socket.on('disconnect', function() {
 			console.log('Got disconnect!');
 
