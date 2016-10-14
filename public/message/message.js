@@ -100,7 +100,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 
 
-		var avchatObj = null;
+		window.avchatObj = null;
 		var conferenceId = "mtconfid3";
 		var appToken = "MDAxMDAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYRzQeJwJ9kIT1W0phkyxfph65BBwLjVSKIQ0dFZTpODdrTSBwB97bp8GCTZyPmRD6CbT64Dh5R2kwRKM8DySov0OvOwMPtqOLD%2B7eobHmqsh3%2BPtpwU%2FDGlGAJOwpOYk%3D";
 		var sessionToken = getQSParam("t");
