@@ -135,6 +135,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		};
 
 		socket.on('private_call', function(peerData) {
+			console.log('user called---------');
 			avchatObj.join(conferenceId, participantId, "participant name", function(result) {})
 		});
 
@@ -148,6 +149,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				videoFrameRate: new Array(5, 15)
 			}, function(res) {
 				if (!res.error) {
+					console.log('make call---------');
 					socket.emit('private_call', peerData);
 					onAVChatInit()
 				}
@@ -155,6 +157,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		}
 
 		function onAVChatInit() {
+			console.log('Binding events----------');
 			//register to conference events
 			avchatObj.onParticipantJoined = onParticipantJoined;
 			avchatObj.onParticipantLeft = onParticipantLeft;
@@ -170,6 +173,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		}
 
 		function onParticipantJoined(evt) {
+			console.log('Participant Joined----------');
 			if (evt.stream && evt.uid != null) {
 				if (evt.uid == participantId) { //me
 					document.getElementById("localVideo").src = URL.createObjectURL(evt.stream);
