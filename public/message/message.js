@@ -3,7 +3,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		$routeProvider
 			.when('/messages', {
 				templateUrl: 'message/connected-users.html',
-				controller: 'messageController'
+				controller: 'msgPageController'
 			})
 			.when('/messages/:id', {
 				templateUrl: 'message/message.html',
@@ -34,6 +34,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			}
 		};
 	})
+	.controller('msgPageController', function($scope) {})
 	.controller('messageController', function($scope, $rootScope, $routeParams, $location, socket) {
 		if ($routeParams.id === $rootScope.current_user.username || !$rootScope.authenticated) {
 			return $location.path('/');
