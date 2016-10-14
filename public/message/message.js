@@ -179,6 +179,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			avchatObj.onConferenceStateChanged = onConferenceStateChanged;
 			avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
 			avchatObj.join(conferenceId, participantId, "participant name", function(result) {});
+			console.log('Events bound----------');
 		}
 
 		function onParticipantLeft(evt) {
