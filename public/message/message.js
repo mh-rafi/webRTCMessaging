@@ -12,6 +12,7 @@ function onClientConnected() {
 		videoResolution: ooVooClient.VideoResolution["HIGH"],
 		videoFrameRate: new Array(5, 15)
 	}, function(res) {
+		console.log(avchatObj);
 		if (!res.error) {
 			avchatObj.onParticipantJoined = onParticipantJoined;
 			avchatObj.onParticipantLeft = onParticipantLeft;
