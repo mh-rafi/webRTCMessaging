@@ -107,29 +107,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		var peerData = {
 			_receiver: $scope.receiver
 		};
-		if (!sessionToken) {
-				//login to get session token
-				//for example (get random id)
-				console.log('Not session');
-				participantId = Math.floor(Math.random() * 9999999999) + 1000000000;
-
-				var redirectUrl = "url to send response with the session token"
-				redirectUrl = location.href + "?pid=" + participantId;
-
-				console.log(redirectUrl);
-				ooVooClient.authorization({
-					token: appToken,
-					isSandbox: true,
-					userId: participantId,
-					callbackUrl: redirectUrl
-				});
-			} else {
-				console.log(sessionToken);
-				ooVooClient.connect({
-					userId: participantId,
-					userToken: sessionToken
-				}, onClientConnected);
-			}
+		
 
 		$scope.makeCall = function() {
 			avchatObj.join(conferenceId, participantId, "participant name", function(result) {

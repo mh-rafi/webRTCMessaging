@@ -54,6 +54,31 @@ var appToken = "MDAxMDAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYRzQeJwJ9kIT1W0ph
 var sessionToken = getQSParam("t");
 var participantId = getQSParam("pid");
 
+if (!sessionToken) {
+        //login to get session token
+        //for example (get random id)
+        console.log('Not session');
+        participantId = Math.floor(Math.random() * 9999999999) + 1000000000;
+
+        var redirectUrl = "url to send response with the session token"
+        redirectUrl = location.href + "?pid=" + participantId;
+
+        console.log(redirectUrl);
+        ooVooClient.authorization({
+          token: appToken,
+          isSandbox: true,
+          userId: participantId,
+          callbackUrl: redirectUrl
+        });
+      } else {
+        console.log(sessionToken);
+        ooVooClient.connect({
+          userId: participantId,
+          userToken: sessionToken
+        }, onClientConnected);
+      }
+
+
 function onClientConnected() {
   //init conference
   avchatObj = ooVooClient.AVChat.init({
