@@ -1,3 +1,59 @@
+var avchatObj = null;
+var conferenceId = "mtconfid";
+var appToken = "MDAxMDAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYRzQeJwJ9kIT1W0phkyxfph65BBwLjVSKIQ0dFZTpODdrTSBwB97bp8GCTZyPmRD6CbT64Dh5R2kwRKM8DySov0OvOwMPtqOLD%2B7eobHmqsh3%2BPtpwU%2FDGlGAJOwpOYk%3D";
+var sessionToken = getQSParam("t");
+var participantId = getQSParam("pid");
+
+function onClientConnected() {
+	//init conference
+	avchatObj = ooVooClient.AVChat.init({
+		video: true,
+		audio: true,
+		videoResolution: ooVooClient.VideoResolution["HIGH"],
+		videoFrameRate: new Array(5, 15)
+	}, function(res) {
+		if (!res.error) {
+			avchatObj.onParticipantJoined = onParticipantJoined;
+			avchatObj.onParticipantLeft = onParticipantLeft;
+			avchatObj.onConferenceStateChanged = onConferenceStateChanged;
+			avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
+		}
+	});
+}
+
+function onParticipantLeft(evt) {
+	if (evt.uid) {
+		document.getElementById("vid_" + evt.uid).remove();
+	}
+}
+
+function onParticipantJoined(evt) {
+	console.log('Participant Joined----------');
+	if (evt.stream && evt.uid != null) {
+		if (evt.uid == participantId) { //me
+			document.getElementById("localVideo").src = URL.createObjectURL(evt.stream);
+		} else { //participants
+			var videoElement = document.createElement("video");
+			videoElement.id = "vid_" + evt.uid;
+			videoElement.src = URL.createObjectURL(evt.stream);
+			videoElement.setAttribute("autoplay", true);
+			document.body.appendChild(videoElement);
+		}
+	}
+}
+
+function onConferenceStateChanged(evt) {}
+
+function onRemoteVideoStateChanged(evt) {}
+
+function getQSParam(name) {
+		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			results = regex.exec(location.search);
+		return results === null ? "" : results[1].replace(/\+/g, " ");
+	}
+
+
 angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider
@@ -100,11 +156,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 
 
-		var avchatObj = null;
-		var conferenceId = "mtconfid";
-		var appToken = "MDAxMDAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYRzQeJwJ9kIT1W0phkyxfph65BBwLjVSKIQ0dFZTpODdrTSBwB97bp8GCTZyPmRD6CbT64Dh5R2kwRKM8DySov0OvOwMPtqOLD%2B7eobHmqsh3%2BPtpwU%2FDGlGAJOwpOYk%3D";
-		var sessionToken = getQSParam("t");
-		var participantId = getQSParam("pid");
+		
 		var peerData = {
 			_receiver: $scope.receiver
 		};
@@ -153,66 +205,9 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		});
 
 
-		function onClientConnected() {
-			//init conference
-			avchatObj = ooVooClient.AVChat.init({
-				video: true,
-				audio: true,
-				videoResolution: ooVooClient.VideoResolution["HIGH"],
-				videoFrameRate: new Array(5, 15)
-			}, function(res) {
-				if (!res.error) {
-					avchatObj.onParticipantJoined = onParticipantJoined;
-					avchatObj.onParticipantLeft = onParticipantLeft;
-					avchatObj.onConferenceStateChanged = onConferenceStateChanged;
-					avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
-				}
-			});
-		}
 
-		// function onAVChatInit() {
-		// 	console.log('Binding events----------');
-		// 	console.log(avchatObj);
-		// 	//register to conference events
-		// 	avchatObj.onParticipantJoined = onParticipantJoined;
-		// 	avchatObj.onParticipantLeft = onParticipantLeft;
-		// 	avchatObj.onConferenceStateChanged = onConferenceStateChanged;
-		// 	avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
-			
-		// 	console.log('Events bound----------');
-		// }
 
-		function onParticipantLeft(evt) {
-			if (evt.uid) {
-				document.getElementById("vid_" + evt.uid).remove();
-			}
-		}
-
-		function onParticipantJoined(evt) {
-			console.log('Participant Joined----------');
-			if (evt.stream && evt.uid != null) {
-				if (evt.uid == participantId) { //me
-					document.getElementById("localVideo").src = URL.createObjectURL(evt.stream);
-				} else { //participants
-					var videoElement = document.createElement("video");
-					videoElement.id = "vid_" + evt.uid;
-					videoElement.src = URL.createObjectURL(evt.stream);
-					videoElement.setAttribute("autoplay", true);
-					document.body.appendChild(videoElement);
-				}
-			}
-		}
-
-		function onConferenceStateChanged(evt) {}
-
-		function onRemoteVideoStateChanged(evt) {}
-
-		function getQSParam(name) {
-			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-				results = regex.exec(location.search);
-			return results === null ? "" : results[1].replace(/\+/g, " ");
-		}
+		
 
 
 		
