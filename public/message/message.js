@@ -190,7 +190,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				console.log('Join callback -----------')
 				console.log(result)
 			});
-			socket.emit('private_call', peerData);
+			// socket.emit('private_call', peerData);
 
 			// onClientConnected();
 			
