@@ -68,6 +68,10 @@ function onClientConnected() {
       avchatObj.onParticipantLeft = onParticipantLeft;
       avchatObj.onConferenceStateChanged = onConferenceStateChanged;
       avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
+      avchatObj.join(conferenceId, participantId, "participant name", function(result) {
+        console.log('Join callback -----------')
+        console.log(result)
+      });
     }
   });
 }
