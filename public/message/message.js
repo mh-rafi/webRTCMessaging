@@ -100,8 +100,8 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 
 
-		window.avchatObj = null;
-		var conferenceId = "mtconfid3";
+		var avchatObj = null;
+		var conferenceId = "mtconfid";
 		var appToken = "MDAxMDAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYRzQeJwJ9kIT1W0phkyxfph65BBwLjVSKIQ0dFZTpODdrTSBwB97bp8GCTZyPmRD6CbT64Dh5R2kwRKM8DySov0OvOwMPtqOLD%2B7eobHmqsh3%2BPtpwU%2FDGlGAJOwpOYk%3D";
 		var sessionToken = getQSParam("t");
 		var participantId = getQSParam("pid");
@@ -129,26 +129,25 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				ooVooClient.connect({
 					userId: participantId,
 					userToken: sessionToken
-				}, function(res) {});
+				}, onClientConnected);
 			}
+
 		$scope.makeCall = function() {
-			onClientConnected();
+			avchatObj.join(conferenceId, participantId, "participant name", function(result) {
+				console.log('Join callback -----------')
+				console.log(result)
+			});
+			socket.emit('private_call', peerData);
+
+			// onClientConnected();
 			
 		};
 
 		socket.on('private_call', function(peerData) {
 			console.log('user called---------');
-			avchatObj = ooVooClient.AVChat.init({
-				video: true,
-				audio: true,
-				videoResolution: ooVooClient.VideoResolution["HIGH"],
-				videoFrameRate: new Array(5, 15)
-			}, function(res) {
-				if (!res.error) {
-					console.log('receive call---------');
-					// socket.emit('private_call', peerData);
-					onAVChatInit()
-				}
+			avchatObj.join(conferenceId, participantId, "participant name", function(result) {
+				console.log('Join callback -----------')
+				console.log(result)
 			});
 			
 		});
@@ -163,27 +162,25 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				videoFrameRate: new Array(5, 15)
 			}, function(res) {
 				if (!res.error) {
-					console.log('make call---------');
-					socket.emit('private_call', peerData);
-					onAVChatInit()
+					avchatObj.onParticipantJoined = onParticipantJoined;
+					avchatObj.onParticipantLeft = onParticipantLeft;
+					avchatObj.onConferenceStateChanged = onConferenceStateChanged;
+					avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
 				}
 			});
 		}
 
-		function onAVChatInit() {
-			console.log('Binding events----------');
-			console.log(avchatObj);
-			//register to conference events
-			avchatObj.onParticipantJoined = onParticipantJoined;
-			avchatObj.onParticipantLeft = onParticipantLeft;
-			avchatObj.onConferenceStateChanged = onConferenceStateChanged;
-			avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
-			avchatObj.join(conferenceId, participantId, "participant name", function(result) {
-				console.log('Join callback -----------')
-				console.log(result)
-			});
-			console.log('Events bound----------');
-		}
+		// function onAVChatInit() {
+		// 	console.log('Binding events----------');
+		// 	console.log(avchatObj);
+		// 	//register to conference events
+		// 	avchatObj.onParticipantJoined = onParticipantJoined;
+		// 	avchatObj.onParticipantLeft = onParticipantLeft;
+		// 	avchatObj.onConferenceStateChanged = onConferenceStateChanged;
+		// 	avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged;
+			
+		// 	console.log('Events bound----------');
+		// }
 
 		function onParticipantLeft(evt) {
 			if (evt.uid) {
