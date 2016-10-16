@@ -180,6 +180,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				newCall(call);
 			}, function() {
 				console.error('Local getUserMedia error');
+				
 			});
 		}
 
