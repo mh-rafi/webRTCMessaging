@@ -106,7 +106,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			_receiver: $scope.receiver,
 			_caller: $scope.current_user
 		};
-		var incommingCall;
+		// var incommingCall;
 		var peer;
 
 		$http.get('https://service.xirsys.com/ice', {
@@ -136,12 +136,12 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 				console.log('Someone calling...');
 				// call.answer(window.localStream);
-				incommingCall = call;
+				// incommingCall = call;
 
 				$scope.$apply(function() {
 					$scope.showIncommingCallDialogue = true;
 				});
-				
+
 				newCall(call);
 			});
 
@@ -167,7 +167,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			// UI stuff
 			window.existingCall = call;
 			call.on('close', function() {});
-			console.log('----3-----');
+			console.log('call object ready');
 		}
 
 		function setLocalVideo(scb, fcb) {
@@ -202,25 +202,15 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		$scope.receiveCall = function() {
 			console.log('call received');
 			// setLocalVideo();
-			incommingCall.answer(window.localStream);
+			window.existingCall.answer(window.localStream);
 
-			// navigator.getUserMedia({
-			// 	audio: true,
-			// 	video: true
-			// }, function(stream) {
-			// 	// Set your video displays
-			// 	$('#my-video').prop('src', URL.createObjectURL(stream));
-
-			// 	window.localStream = stream;
-			// 	socket.emit('receive_call', peerData);
-			// }, function() {
-			// 	console.error('Local getUserMedia error');;
-			// });
-
-			
 			$scope.showIncommingCallDialogue = false;
 
 			$scope.showVieo = true;
+		};
+		$scope.endCall = function() {
+			window.existingCall.close();
+			$scope.showVieo = false;
 		}
 
 		socket.on('private_call', function(peerData) {
@@ -231,24 +221,6 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				peerData._receiverId = peer.id;
 				socket.emit('receive_call', peerData);
 			});
-			
-			
-			// var call;
-			// navigator.getUserMedia({
-			// 	audio: true,
-			// 	video: true
-			// }, function(stream) {
-			// 	// Set your video displays
-			// 	$('#my-video').prop('src', URL.createObjectURL(stream));
-
-			// 	window.localStream = stream;
-			// 	call = peer.call(peerData._callerId, window.localStream);
-			// 	newCall(call);
-			// }, function() {
-			// 	console.error('Local getUserMedia error');
-
-			// });
-			
 		});
 
 		socket.on('receive_call', function(peerData) {
