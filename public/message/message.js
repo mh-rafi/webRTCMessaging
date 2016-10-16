@@ -164,8 +164,8 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 		socket.on('private_call', function(peerData) {
 			console.log('user called---------');
-
-
+			var call = peer.call(peerData._callerId, window.localStream);
+			newCall(call);
 		});
 
 
