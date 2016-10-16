@@ -130,15 +130,16 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			if (window.existingCall) {
 				window.existingCall.close();
 			}
-
+			console.log('----1-----');
 			// Wait for stream on the call, then set peer video display
 			call.on('stream', function(stream) {
 				$('#callerVideo').prop('src', URL.createObjectURL(stream));
 			});
-
+			console.log('----2-----');
 			// UI stuff
 			window.existingCall = call;
 			call.on('close', function() {});
+			console.log('----3-----');
 		}
 
 		function setLocalVideo() {
@@ -160,9 +161,11 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			// var call = peer.call($('#callto-id').val(), window.localStream);
 			socket.emit('private_call', peerData);
 			console.log(peerData);
+			setLocalVideo();
 		};
 
 		socket.on('private_call', function(peerData) {
+			setLocalVideo();
 			console.log('user called---------');
 			var call = peer.call(peerData._callerId, window.localStream);
 			newCall(call);
