@@ -178,7 +178,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				};
 
 			}, function() {
-				console.error('Local getUserMedia error');;\
+				console.error('Local getUserMedia error');
 				if(fcb) {
 					fcb()
 				};
@@ -219,7 +219,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 		socket.on('private_call', function(peerData) {
 			console.log('socket event private_call');
-			
+
 			setLocalVideo(function(localStrem) {
 				$scope.showIncommingCallDialogue = true;
 			});
