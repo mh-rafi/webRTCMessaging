@@ -163,7 +163,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			console.log('----3-----');
 		}
 
-		function setLocalVideo() {
+		function setLocalVideo(scb, fcb) {
 			// Get audio/video stream
 			navigator.getUserMedia({
 				audio: true,
@@ -173,8 +173,15 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				$('#my-video').prop('src', URL.createObjectURL(stream));
 
 				window.localStream = stream;
+				if(scb) {
+					scb(stream)
+				};
+
 			}, function() {
-				console.error('Local getUserMedia error');;
+				console.error('Local getUserMedia error');;\
+				if(fcb) {
+					fcb()
+				};
 			});
 		}
 
@@ -189,19 +196,20 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			console.log('call received');
 			// setLocalVideo();
 			peerData._receiverId = peer.id;
+			socket.emit('receive_call', peerData);
 
-			navigator.getUserMedia({
-				audio: true,
-				video: true
-			}, function(stream) {
-				// Set your video displays
-				$('#my-video').prop('src', URL.createObjectURL(stream));
+			// navigator.getUserMedia({
+			// 	audio: true,
+			// 	video: true
+			// }, function(stream) {
+			// 	// Set your video displays
+			// 	$('#my-video').prop('src', URL.createObjectURL(stream));
 
-				window.localStream = stream;
-				socket.emit('receive_call', peerData);
-			}, function() {
-				console.error('Local getUserMedia error');;
-			});
+			// 	window.localStream = stream;
+			// 	socket.emit('receive_call', peerData);
+			// }, function() {
+			// 	console.error('Local getUserMedia error');;
+			// });
 
 			
 			$scope.showIncommingCallDialogue = false;
@@ -211,26 +219,12 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 		socket.on('private_call', function(peerData) {
 			console.log('socket event private_call');
-			// $scope.showIncommingCallDialogue = true;
-			peerData._receiverId = peer.id;
-
-			navigator.getUserMedia({
-				audio: true,
-				video: true
-			}, function(stream) {
-				// Set your video displays
-				$('#my-video').prop('src', URL.createObjectURL(stream));
-
-				window.localStream = stream;
-				socket.emit('receive_call', peerData);
-			}, function() {
-				console.error('Local getUserMedia error');;
-			});
-
 			
-			$scope.showIncommingCallDialogue = false;
-
-			$scope.showVieo = true;
+			setLocalVideo(function(localStrem) {
+				$scope.showIncommingCallDialogue = true;
+			});
+			
+			
 			// var call;
 			// navigator.getUserMedia({
 			// 	audio: true,
