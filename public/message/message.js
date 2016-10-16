@@ -165,6 +165,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			socket.emit('private_call', peerData);
 			console.log(peerData);
 			setLocalVideo();
+			$scope.showVieo = true;
 		};
 		$scope.receiveCall = function() {
 			var call;
@@ -201,7 +202,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				console.error('Local getUserMedia error');
 
 			});
-			// $scope.showIncommingCallDialogue = true;
+			$scope.showVieo = true;
 		});
 
 
