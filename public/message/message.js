@@ -132,7 +132,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			});
 
 			peer.on('call', function(call) {
-				
+
 				console.log('Someone calling...');
 				call.answer(window.localStream);
 				newCall(call);
@@ -174,7 +174,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 				window.localStream = stream;
 			}, function() {
-				alert('Local error');
+				console.error('Local getUserMedia error');;
 			});
 		}
 
@@ -186,10 +186,24 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			$scope.showVieo = true;
 		};
 		$scope.receiveCall = function() {
-			setLocalVideo();
-
+			console.log('call received');
+			// setLocalVideo();
 			peerData._receiverId = peer.id;
-			socket.emit('receive_call', peerData);
+
+			navigator.getUserMedia({
+				audio: true,
+				video: true
+			}, function(stream) {
+				// Set your video displays
+				$('#my-video').prop('src', URL.createObjectURL(stream));
+
+				window.localStream = stream;
+				socket.emit('receive_call', peerData);
+			}, function() {
+				console.error('Local getUserMedia error');;
+			});
+
+			
 			$scope.showIncommingCallDialogue = false;
 
 			$scope.showVieo = true;
@@ -218,9 +232,10 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		});
 
 		socket.on('receive_call', function(peerData) {
+			console.log('on receive_call');
 			var call = peer.call(peerData._receiverId, window.localStream);
 			newCall(call);
-			
+			console.log('calling to _receiverId');
 		});
 
 
