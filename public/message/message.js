@@ -1,6 +1,3 @@
-
-
-
 angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 	.config(['$routeProvider', function($routeProvider) {
 		$routeProvider
@@ -101,30 +98,75 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			});
 		};
 
+		// Compatibility shim
+		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
 		var peerData = {
 			_receiver: $scope.receiver
 		};
-		var peer = new Peer({key: 'zqpom31ftyyqr529'});
+		var peer = new Peer({
+			host: location.hostname,
+			port: location.port,
+			path: '/peerjs'
+		});
+
+		peer.on('open', function() {
+			peerData._callerId = peer.id;
+			console.log(peer.id);
+		});
+
+		peer.on('call', function(call) {
+			// Answer the call automatically (instead of prompting user) for demo purposes
+			call.answer(window.localStream);
+			newCall(call);
+		});
+
+		peer.on('error', function(err) {
+			alert(err.message);
+		});
+
+		function newCall(call) {
+			// Hang up on an existing call if present
+			if (window.existingCall) {
+				window.existingCall.close();
+			}
+
+			// Wait for stream on the call, then set peer video display
+			call.on('stream', function(stream) {
+				$('#callerVideo').prop('src', URL.createObjectURL(stream));
+			});
+
+			// UI stuff
+			window.existingCall = call;
+			call.on('close', function() {});
+		}
+
+		function setLocalVideo() {
+			// Get audio/video stream
+			navigator.getUserMedia({
+				audio: true,
+				video: true
+			}, function(stream) {
+				// Set your video displays
+				$('#my-video').prop('src', URL.createObjectURL(stream));
+
+				window.localStream = stream;
+			}, function() {
+				alert('Local error');
+			});
+		}
 
 		$scope.makeCall = function() {
-			
-			
+			// var call = peer.call($('#callto-id').val(), window.localStream);
+			socket.emit('private_call', peerData);
+			console.log(peerData);
 		};
 
 		socket.on('private_call', function(peerData) {
 			console.log('user called---------');
-			
-			
+
+
 		});
-
-
-
-
-		
-
-
-		
 
 
 

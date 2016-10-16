@@ -35,10 +35,10 @@
 <div class="video_container box">
 	{{callStatus}}
 	<div class="selfVideoBox">
-		
+		<video id="my-video" muted="true" autoplay></video>
 	</div>
     <div class="callerVideoBox">
-    	<video autoplay="autoplay" id="callerVideo"></video>
+    	<video autoplay id="callerVideo"></video>
     </div>
 	<a class="btn btn-primary" ng-click="endCall()">End call</a>
 </div>
