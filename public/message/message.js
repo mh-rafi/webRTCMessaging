@@ -106,6 +106,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			_receiver: $scope.receiver,
 			_caller: $scope.current_user
 		};
+		var incommingCall;
 		var peer;
 
 		$http.get('https://service.xirsys.com/ice', {
@@ -134,7 +135,13 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			peer.on('call', function(call) {
 
 				console.log('Someone calling...');
-				call.answer(window.localStream);
+				// call.answer(window.localStream);
+				incommingCall = call;
+
+				$scope.$apply(function() {
+					$scope.showIncommingCallDialogue = true;
+				});
+				
 				newCall(call);
 			});
 
@@ -195,8 +202,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		$scope.receiveCall = function() {
 			console.log('call received');
 			// setLocalVideo();
-			peerData._receiverId = peer.id;
-			socket.emit('receive_call', peerData);
+			incommingCall.answer(window.localStream);
 
 			// navigator.getUserMedia({
 			// 	audio: true,
@@ -221,9 +227,9 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			console.log('socket event private_call');
 
 			setLocalVideo(function(localStrem) {
-				$scope.$apply(function() {
-					$scope.showIncommingCallDialogue = true;
-				})
+				
+				peerData._receiverId = peer.id;
+				socket.emit('receive_call', peerData);
 			});
 			
 			
