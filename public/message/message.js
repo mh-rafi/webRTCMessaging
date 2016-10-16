@@ -209,6 +209,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			$scope.showIncommingCallDialogue = false;
 
 			$scope.showVieo = true;
+			ringtone.pause();
 		};
 		$scope.endCall = function() {
 			window.existingCall.close();
