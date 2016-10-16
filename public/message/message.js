@@ -112,16 +112,18 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 		peer.on('open', function() {
 			peerData._callerId = peer.id;
-			console.log(peer.id);
+			console.log('user connected, id: '+peer.id);
 		});
 
 		peer.on('call', function(call) {
 			// Answer the call automatically (instead of prompting user) for demo purposes
+			console.log('Someone calling...');
 			call.answer(window.localStream);
 			newCall(call);
 		});
 
 		peer.on('error', function(err) {
+			console.log('peer.on Error occured');
 			alert(err.message);
 		});
 
@@ -130,13 +132,13 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			if (window.existingCall) {
 				window.existingCall.close();
 			}
-			console.log('----1-----');
 			console.log(call);
+
 			// Wait for stream on the call, then set peer video display
 			call.on('stream', function(stream) {
 				$('#callerVideo').prop('src', URL.createObjectURL(stream));
 			});
-			console.log('----2-----');
+
 			// UI stuff
 			window.existingCall = call;
 			call.on('close', function() {});
@@ -164,8 +166,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			console.log(peerData);
 			setLocalVideo();
 		};
-
-		socket.on('private_call', function(peerData) {
+		$scope.receiveCall = function() {
 			var call;
 			navigator.getUserMedia({
 				audio: true,
@@ -175,19 +176,16 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				$('#my-video').prop('src', URL.createObjectURL(stream));
 
 				window.localStream = stream;
-				console.log(window.localStream);
 				call = peer.call(peerData._callerId, window.localStream);
 				newCall(call);
 			}, function() {
-				alert('Local error');
+				console.error('Local getUserMedia error');
 			});
+		}
 
-			// setLocalVideo();
-			console.log('user called---------');
-			
-			console.log(peerData);
-			console.log(window.localStream);
-			
+		socket.on('private_call', function(peerData) {
+			console.log('socket event private_call');
+			$scope.showIncommingCallDialogue = true;
 		});
 
 

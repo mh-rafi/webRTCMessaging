@@ -340,3 +340,24 @@ a.msg_noti span.fa {
 .message_input {
 	margin-bottom: 16px;
 }
+
+.video_container {
+	position: absolute;
+	top: 74px;
+	right: 10px;
+	margin: auto;
+	max-width: 600px;
+}
+
+.selfVideoBox {}
+
+.callerVideoBox {}
+
+.icommingCallDialogue {
+	position: absolute;
+	top: 200px;
+	right: 0;
+	left: 0;
+	margin: auto;
+	width: 320px;
+}
