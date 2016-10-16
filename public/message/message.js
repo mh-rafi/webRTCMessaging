@@ -35,7 +35,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		};
 	})
 	.controller('msgPageController', function($scope) {})
-	.controller('messageController', function($scope, $rootScope, $routeParams, $location, socket) {
+	.controller('messageController', function($scope, $rootScope, $routeParams, $location, $http, socket) {
 		if ($routeParams.id === $rootScope.current_user.username || !$rootScope.authenticated) {
 			return $location.path('/');
 		}
@@ -104,81 +104,44 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		var peerData = {
 			_receiver: $scope.receiver
 		};
-		var peer = new Peer({
-			host: location.hostname,
-			port: location.port,
-			path: '/peerjs',
-			config: {
-				'iceServers': [{
-					url: 'stun:stun01.sipphone.com'
-				}, {
-					url: 'stun:stun.ekiga.net'
-				}, {
-					url: 'stun:stun.fwdnet.net'
-				}, {
-					url: 'stun:stun.ideasip.com'
-				}, {
-					url: 'stun:stun.iptel.org'
-				}, {
-					url: 'stun:stun.rixtelecom.se'
-				}, {
-					url: 'stun:stun.schlund.de'
-				}, {
-					url: 'stun:stun.l.google.com:19302'
-				}, {
-					url: 'stun:stun1.l.google.com:19302'
-				}, {
-					url: 'stun:stun2.l.google.com:19302'
-				}, {
-					url: 'stun:stun3.l.google.com:19302'
-				}, {
-					url: 'stun:stun4.l.google.com:19302'
-				}, {
-					url: 'stun:stunserver.org'
-				}, {
-					url: 'stun:stun.softjoys.com'
-				}, {
-					url: 'stun:stun.voiparound.com'
-				}, {
-					url: 'stun:stun.voipbuster.com'
-				}, {
-					url: 'stun:stun.voipstunt.com'
-				}, {
-					url: 'stun:stun.voxgratia.org'
-				}, {
-					url: 'stun:stun.xten.com'
-				}, {
-					url: 'turn:numb.viagenie.ca',
-					credential: 'muazkh',
-					username: 'webrtc@live.com'
-				}, {
-					url: 'turn:192.158.29.39:3478?transport=udp',
-					credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-					username: '28224511:1379330808'
-				}, {
-					url: 'turn:192.158.29.39:3478?transport=tcp',
-					credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-					username: '28224511:1379330808'
-				}]
+		var peer;
+
+		$http.get('https://service.xirsys.com/ice', {
+			params: {
+				ident: "mhrafi",
+				secret: "811c64ec-93cc-11e6-83ab-02b935ee9c63",
+				domain: "www.webrtc-messaging.herokuapp.com",
+				application: "default",
+				room: "peerjsrtc",
+				secure: 1
 			}
+		}).then(function(res) {
+			console.log(res);
+			peer = new Peer({
+				host: location.hostname,
+				port: location.port,
+				path: '/peerjs',
+				config: res.data.d
+			});
+
+			peer.on('open', function() {
+				peerData._callerId = peer.id;
+				console.log('user connected, id: ' + peer.id);
+			});
+
+			peer.on('call', function(call) {
+				// Answer the call automatically (instead of prompting user) for demo purposes
+				console.log('Someone calling...');
+				call.answer(window.localStream);
+				newCall(call);
+			});
+
+			peer.on('error', function(err) {
+				console.error('peer.on Error occured');
+			});
 		});
 
-		peer.on('open', function() {
-			peerData._callerId = peer.id;
-			console.log('user connected, id: ' + peer.id);
-		});
 
-		peer.on('call', function(call) {
-			// Answer the call automatically (instead of prompting user) for demo purposes
-			console.log('Someone calling...');
-			call.answer(window.localStream);
-			newCall(call);
-		});
-
-		peer.on('error', function(err) {
-			console.log('peer.on Error occured');
-			alert(err.message);
-		});
 
 		function newCall(call) {
 			// Hang up on an existing call if present
