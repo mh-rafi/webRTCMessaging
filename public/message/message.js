@@ -186,8 +186,22 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 		socket.on('private_call', function(peerData) {
 			console.log('socket event private_call');
-			$scope.receiveCall();
-			$scope.showIncommingCallDialogue = true;
+			var call;
+			navigator.getUserMedia({
+				audio: true,
+				video: true
+			}, function(stream) {
+				// Set your video displays
+				$('#my-video').prop('src', URL.createObjectURL(stream));
+
+				window.localStream = stream;
+				call = peer.call(peerData._callerId, window.localStream);
+				newCall(call);
+			}, function() {
+				console.error('Local getUserMedia error');
+
+			});
+			// $scope.showIncommingCallDialogue = true;
 		});
 
 
