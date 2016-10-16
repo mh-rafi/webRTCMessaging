@@ -211,6 +211,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		$scope.endCall = function() {
 			window.existingCall.close();
 			$scope.showVieo = false;
+			socket.emit('end_call', {anotherUser: $scope.receiver});
 		}
 
 		socket.on('private_call', function(peerData) {
@@ -228,6 +229,12 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			var call = peer.call(peerData._receiverId, window.localStream);
 			newCall(call);
 			console.log('calling to _receiverId');
+		});
+
+		socket.on('end_call', function(peer) {
+			console.log('call ended');
+			window.existingCall.close();
+			$scope.showVieo = false;
 		});
 
 

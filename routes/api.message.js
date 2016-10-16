@@ -171,9 +171,9 @@ module.exports = function(io) {
 			}
 		});
 
-		socket.on('call_received', function(peerData) {
-			if(users[peerData.caller_username]) {
-				users[peerData.caller_username].emit('call_received', {})
+		socket.on('end_call', function(peer) {
+			if(users[peer.anotherUser]) {
+				users[peer.anotherUser].emit('end_call', {})
 			}
 		});
 
