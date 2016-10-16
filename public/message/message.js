@@ -180,12 +180,13 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				newCall(call);
 			}, function() {
 				console.error('Local getUserMedia error');
-				
+
 			});
 		}
 
 		socket.on('private_call', function(peerData) {
 			console.log('socket event private_call');
+			$scope.receiveCall();
 			$scope.showIncommingCallDialogue = true;
 		});
 
