@@ -108,6 +108,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		};
 		// var incommingCall;
 		var peer;
+		var ringtone = new Audio('../tone.mp3');
 
 		$http.get('https://service.xirsys.com/ice', {
 			params: {
@@ -141,7 +142,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				$scope.$apply(function() {
 					$scope.showIncommingCallDialogue = true;
 				});
-
+				ringtone.play();
 				newCall(call);
 			});
 
@@ -192,6 +193,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			});
 		}
 
+		
 		$scope.makeCall = function() {
 			// var call = peer.call($('#callto-id').val(), window.localStream);
 			socket.emit('private_call', peerData);
