@@ -131,6 +131,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 				window.existingCall.close();
 			}
 			console.log('----1-----');
+			console.log(call);
 			// Wait for stream on the call, then set peer video display
 			call.on('stream', function(stream) {
 				$('#callerVideo').prop('src', URL.createObjectURL(stream));
