@@ -176,8 +176,8 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 				window.localStream = stream;
 				console.log(window.localStream);
-				var call = peer.call(peerData._callerId, window.localStream);
-
+				call = peer.call(peerData._callerId, window.localStream);
+				newCall(call);
 			}, function() {
 				alert('Local error');
 			});
@@ -187,7 +187,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			
 			console.log(peerData);
 			console.log(window.localStream);
-			newCall(call);
+			
 		});
 
 
