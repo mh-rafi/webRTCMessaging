@@ -169,6 +169,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			setLocalVideo();
 			console.log('user called---------');
 			var call = peer.call(peerData._callerId, window.localStream);
+			console.log(call);
 			newCall(call);
 		});
 
