@@ -222,7 +222,8 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 
 			setLocalVideo(function(localStrem) {
 				$scope.$apply(function() {
-					$scope.showIncommingCallDialogue = true;
+					peerData._receiverId = peer.id;
+					socket.emit('receive_call', peerData);
 				})
 			});
 			
