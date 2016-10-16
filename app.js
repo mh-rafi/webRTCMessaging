@@ -6,6 +6,9 @@ var passport = require('passport');
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var http = require('http');
+var ExpressPeerServer = require('peer').ExpressPeerServer;
+var fs = require('fs');
 
 console.log('test');
 // Initialize mongoDB sessionstore
@@ -60,7 +63,7 @@ app.use(passport.session());
 //   res.redirect('/')
 // });
 
-app.get(/^((?!\/(socket\.io)|(api)|(auth)).)*$/, function(req, res) {
+app.get(/^((?!\/(socket\.io)|(api)|(auth)|(peerjs)).)*$/, function(req, res) {
   console.log(req.url);
   console.log('-----------/NOT api-------------')
   res.sendFile(path.join(__dirname + '/public/index.html'));
@@ -76,6 +79,22 @@ app.use('/', authenticate);
 app.use('/auth', authenticate);
 // app.use('/', routes);
 app.use('/api', api);
+
+var server = http.createServer(app);
+
+var options = {
+    debug: true
+    // ssl: {
+    //   key: fs.readFileSync('key.pem'),
+    //   cert: fs.readFileSync('cert.pem')
+    // }
+}
+
+app.use('/peerjs', ExpressPeerServer(server, options));
+
+// app.use('/peerjs', function(req, res, next) {
+//   res.send('peer')
+// });
 
 var passportInit = require('./passport-init');
 passportInit(passport);
@@ -93,6 +112,7 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
@@ -115,5 +135,6 @@ app.use(function(err, req, res, next) {
 module.exports = {
   app: app,
   cookieParser: cookieParser,
-  sessionStore: sessionStore
+  sessionStore: sessionStore,
+  server: server
 };

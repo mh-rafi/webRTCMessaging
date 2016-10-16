@@ -102,30 +102,19 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		};
 
 
-
-		
 		var peerData = {
 			_receiver: $scope.receiver
 		};
-		
+		var peer = new Peer({key: 'zqpom31ftyyqr529'});
 
 		$scope.makeCall = function() {
-			avchatObj.join(conferenceId, participantId, "participant name", function(result) {
-				console.log('Join callback -----------')
-				console.log(result)
-			});
-			// socket.emit('private_call', peerData);
-
-			// onClientConnected();
+			
 			
 		};
 
 		socket.on('private_call', function(peerData) {
 			console.log('user called---------');
-			avchatObj.join(conferenceId, participantId, "participant name", function(result) {
-				console.log('Join callback -----------')
-				console.log(result)
-			});
+			
 			
 		});
 

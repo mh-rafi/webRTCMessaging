@@ -1,148 +1,134 @@
 <!DOCTYPE html>
 <html  lang="en">
-<head>
-  <base href="/">
-	<meta charset="UTF-8">
-	<title>WebRTCMessaging</title>
-  <link rel="stylesheet" href="css/font-awesome.min.css">
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-	<link rel="stylesheet" href="css/style.css">
+    <head>
+        <title>PeerJS - Video chat example</title>
+        <script src="js/jquery-1.12.0.min.js"></script>
+        <script src="js/peer.min.js"></script>
+        <script>
 
-  <script src="https://code.oovoo.com/webrtc/oovoosdk-2.1.1.min.js"></script>
-  <script>
-  
- var avchatObj = null;
-        var conferenceId = "mtconfid";
-        var appToken = "MDAxMDAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYRzQeJwJ9kIT1W0phkyxfph65BBwLjVSKIQ0dFZTpODdrTSBwB97bp8GCTZyPmRD6CbT64Dh5R2kwRKM8DySov0OvOwMPtqOLD%2B7eobHmqsh3%2BPtpwU%2FDGlGAJOwpOYk%3D";
-        var sessionToken = getQSParam("t");
-        var participantId = getQSParam("pid");
+    // Compatibility shim
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-        if (!sessionToken) {
-            //login to get session token
-            //for example (get random id)
-            console.log('Not session');
-            participantId = Math.floor(Math.random() * 9999999999) + 1000000000;
+    // PeerJS object
+    var peer = new Peer({ host: location.hostname, port: location.port , path: '/peerjs'});
 
-            var redirectUrl = "url to send response with the session token"
-            redirectUrl = location.href + "?pid=" + participantId;
+    peer.on('open', function(){
+      $('#my-id').text(peer.id);
+    });
 
-            console.log(redirectUrl);
-            setTimeout(function() {
-                ooVooClient.authorization({
-                    token: appToken,
-                    isSandbox: true,
-                    userId: participantId,
-                    callbackUrl: redirectUrl
-                });
-            }, 3000)
-        } else {
-            console.log(sessionToken);
-            ooVooClient.connect({
-                userId: participantId,
-                userToken: sessionToken
-            }, onClientConnected);
-        }
+    // Receiving a call
+    peer.on('call', function(call){
+      // Answer the call automatically (instead of prompting user) for demo purposes
+      call.answer(window.localStream);
+      step3(call);
+    });
+    peer.on('error', function(err){
+      alert(err.message);
+      // Return to step 2 if error occurs
+      step2();
+    });
 
-        function onClientConnected(res) {
-            //init conference
-            avchatObj = ooVooClient.AVChat.init({
-                video: true,
-                audio: true,
-                videoResolution: ooVooClient.VideoResolution["HIGH"],
-                videoFrameRate: new Array(5, 15)
-            }, onAVChatInit);
-            console.log(avchatObj)
-        }
+    // Click handlers setup
+    $(function(){
+      $('#make-call').click(function(){
+        // Initiate a call!
+        var call = peer.call($('#callto-id').val(), window.localStream);
 
-        function onAVChatInit(res) {
-            if (!res.error) {
-                //register to conference events
-                avchatObj.onParticipantJoined = onParticipantJoined;
-                avchatObj.onParticipantLeft = onParticipantLeft;
-                avchatObj.onConferenceStateChanged = onConferenceStateChanged;
-                avchatObj.onRemoteVideoStateChanged = onRemoteVideoStateChanged
-                avchatObj.join(conferenceId, participantId, "participant name", function (result) { });
-            }
-        }
+        step3(call);
+      });
 
-        function onParticipantLeft(evt) {
-            if (evt.uid) {
-                document.getElementById("vid_" + evt.uid).remove();
-            }
-        }
-        function onParticipantJoined(evt) {
-            if (evt.stream && evt.uid != null) {
-                if (evt.uid == participantId) { //me
-                    document.getElementById("localVideo").src = URL.createObjectURL(evt.stream);
-                }
-                else { //participants
-                    var videoElement = document.createElement("video");
-                    videoElement.id = "vid_" + evt.uid;
-                    videoElement.src = URL.createObjectURL(evt.stream);
-                    videoElement.setAttribute("autoplay", true);
-                    document.body.appendChild(videoElement);
-                }
-            }
-        }
-        function onConferenceStateChanged(evt) {
-        }
-        function onRemoteVideoStateChanged(evt) {
-        }
+      $('#end-call').click(function(){
+        window.existingCall.close();
+        step2();
+      });
 
-        function getQSParam(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-                results = regex.exec(location.search);
-            return results === null ? "" : results[1].replace(/\+/g, " ");
-        }
-</script>
-</head>
-<body ng-app="newJobs">
-	<nav class="navbar navbar-default">
-    <div class="container header_container">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-th"></span></a>
-      </div>
+      // Retry if getUserMedia fails
+      $('#step1-retry').click(function(){
+        $('#step1-error').hide();
+        step1();
+      });
 
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li><a href="/">Home</a></li>
-        </ul>
-         <ul class="nav navbar-nav navbar-right">
-          <li ng-hide="authenticated"><a href="/login">Login</a></li>
-          <li ng-hide="authenticated"><a href="/register">Register</a></li>
-          <li ng-show="authenticated"><a href="/user/{{current_user.username}}">{{current_user.username}}</a></li>
-          <li ng-show="authenticated"><a href="" class="msg_noti" ng-click="goToMessages()">Messages<span ng-show="msgNotification" class="fa fa-exclamation"></span></a></li>
-          <li ng-show="authenticated"><a href="#" ng-click="signOut()">Log out</a></li>
-        </ul>
-      </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-  </nav>
-<video id="localVideo" style="width:50%; height:auto;" autoplay muted></video>
-<div ng-view></div>
-<div class="section_loading" ng-show="loading">
-  <div class="box loading_box">
-    <div class="load_text">{{loadText}}</div>
-  </div>
-</div>
+      // Get things started
+      step1();
+    });
 
+    function step1 () {
+      // Get audio/video stream
+      navigator.getUserMedia({audio: true, video: true}, function(stream){
+        // Set your video displays
+        $('#my-video').prop('src', URL.createObjectURL(stream));
 
-  <script src="js/jquery-1.12.0.min.js"></script>
-  <script src="js/socket.io-1.4.3.js"></script>
-	<script src="https://code.angularjs.org/1.5.0-beta.2/angular.min.js"></script>
-  <script src="https://code.angularjs.org/1.5.0-beta.2/angular-route.min.js"></script>
-  <script src="https://code.angularjs.org/1.5.0-beta.2/angular-resource.min.js"></script>
-	<script src="https://code.angularjs.org/1.5.0-beta.2/angular-cookies.min.js"></script>
-  <script src="js/app.js"></script>
-  <script src="profile/profile.js"></script>
-  <script src="message/message.js"></script>
-</body>
+        window.localStream = stream;
+        step2();
+      }, function(){ $('#step1-error').show(); });
+    }
+
+    function step2 () {
+      $('#step1, #step3').hide();
+      $('#step2').show();
+    }
+
+    function step3 (call) {
+      // Hang up on an existing call if present
+      if (window.existingCall) {
+        window.existingCall.close();
+      }
+
+      // Wait for stream on the call, then set peer video display
+      call.on('stream', function(stream){
+        $('#their-video').prop('src', URL.createObjectURL(stream));
+      });
+
+      // UI stuff
+      window.existingCall = call;
+      $('#their-id').text(call.peer);
+      call.on('close', step2);
+      $('#step1, #step2').hide();
+      $('#step3').show();
+    }
+
+  </script>
+    </head>
+    <body>
+        <div class="pure-g">
+            <!-- Video area -->
+            <div class="pure-u-2-3" id="video-container">
+                <video id="their-video" autoplay></video>
+                <video id="my-video" muted="true" autoplay></video>
+            </div>
+            <!-- Steps -->
+            <div class="pure-u-1-3">
+                <h2>PeerJS Video Chat</h2>
+                <!-- Get local audio/video stream -->
+                <div id="step1">
+                    <p>Please click `allow` on the top of the screen so we can access your webcam and microphone for calls.</p>
+                    <div id="step1-error">
+                        <p>Failed to access the webcam and microphone. Make sure to run this demo on an http server and click allow when asked for permission by the browser.</p>
+                        <a href="#" class="pure-button pure-button-error" id="step1-retry">Try again</a>
+                    </div>
+                </div>
+                <!-- Make calls to others -->
+                <div id="step2">
+                    <p>Your id: 
+                        <span id="my-id">...</span>
+                    </p>
+                    <p>Share this id with others so they can call you.</p>
+                    <h3>Make a call</h3>
+                    <div class="pure-form">
+                        <input type="text" placeholder="Call user id..." id="callto-id">
+                        <a href="#" class="pure-button pure-button-success" id="make-call">Call</a>
+                    </div>
+                </div>
+                <!-- Call in progress -->
+                <div id="step3">
+                    <p>Currently in call with 
+                        <span id="their-id">...</span>
+                    </p>
+                    <p>
+                        <a href="#" class="pure-button pure-button-error" id="end-call">End call</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
