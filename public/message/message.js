@@ -221,7 +221,9 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			console.log('socket event private_call');
 
 			setLocalVideo(function(localStrem) {
-				$scope.showIncommingCallDialogue = true;
+				$scope.$apply(function() {
+					$scope.showIncommingCallDialogue = true;
+				})
 			});
 			
 			
