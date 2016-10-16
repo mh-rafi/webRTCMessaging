@@ -40,6 +40,7 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			return $location.path('/');
 		}
 		$scope.receiver = $routeParams.id;
+		$scope.current_user = $rootScope.current_user.username;
 		// $scope.active_class = 
 		// set socket for current user
 		if ($routeParams.id) {
@@ -102,7 +103,8 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
 		var peerData = {
-			_receiver: $scope.receiver
+			_receiver: $scope.receiver,
+			_caller: $scope.current_user
 		};
 		var peer;
 
@@ -130,14 +132,14 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			});
 
 			peer.on('call', function(call) {
-				// Answer the call automatically (instead of prompting user) for demo purposes
+				
 				console.log('Someone calling...');
 				call.answer(window.localStream);
 				newCall(call);
 			});
 
 			peer.on('error', function(err) {
-				console.error('peer.on Error occured');
+				console.error('peer.on Error occured: '+ err.message);
 			});
 		});
 
@@ -184,41 +186,41 @@ angular.module('newJobs.message', ['ngRoute', 'ngResource'])
 			$scope.showVieo = true;
 		};
 		$scope.receiveCall = function() {
-			var call;
-			navigator.getUserMedia({
-				audio: true,
-				video: true
-			}, function(stream) {
-				// Set your video displays
-				$('#my-video').prop('src', URL.createObjectURL(stream));
+			setLocalVideo();
 
-				window.localStream = stream;
-				call = peer.call(peerData._callerId, window.localStream);
-				newCall(call);
-			}, function() {
-				console.error('Local getUserMedia error');
+			peerData._receiverId = peer.id;
+			socket.emit('receive_call', peerData);
+			$scope.showIncommingCallDialogue = false;
 
-			});
+			$scope.showVieo = true;
 		}
 
 		socket.on('private_call', function(peerData) {
 			console.log('socket event private_call');
-			var call;
-			navigator.getUserMedia({
-				audio: true,
-				video: true
-			}, function(stream) {
-				// Set your video displays
-				$('#my-video').prop('src', URL.createObjectURL(stream));
+			$scope.showIncommingCallDialogue = true;
 
-				window.localStream = stream;
-				call = peer.call(peerData._callerId, window.localStream);
-				newCall(call);
-			}, function() {
-				console.error('Local getUserMedia error');
+			// var call;
+			// navigator.getUserMedia({
+			// 	audio: true,
+			// 	video: true
+			// }, function(stream) {
+			// 	// Set your video displays
+			// 	$('#my-video').prop('src', URL.createObjectURL(stream));
 
-			});
-			$scope.showVieo = true;
+			// 	window.localStream = stream;
+			// 	call = peer.call(peerData._callerId, window.localStream);
+			// 	newCall(call);
+			// }, function() {
+			// 	console.error('Local getUserMedia error');
+
+			// });
+			
+		});
+
+		socket.on('receive_call', function(peerData) {
+			var call = peer.call(peerData._receiverId, window.localStream);
+			newCall(call);
+			
 		});
 
 

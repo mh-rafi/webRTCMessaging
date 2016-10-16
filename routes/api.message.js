@@ -163,6 +163,14 @@ module.exports = function(io) {
 			}
 		});
 
+		socket.on('receive_call', function(peerData) {
+			if(users[peerData._caller]) {
+				users[peerData._caller].emit('receive_call', peerData)
+			} else {
+
+			}
+		});
+
 		socket.on('call_received', function(peerData) {
 			if(users[peerData.caller_username]) {
 				users[peerData.caller_username].emit('call_received', {})
