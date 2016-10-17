@@ -349,9 +349,15 @@ a.msg_noti span.fa {
 	max-width: 600px;
 }
 
-.selfVideoBox {}
+#my-video {
+	width: 120px;
+	height: auto;
+}
 
-.callerVideoBox {}
+#callerVideo {
+	width: 480px;
+	height: 320px;
+}
 
 .icommingCallDialogue {
 	position: absolute;
